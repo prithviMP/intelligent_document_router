@@ -29,7 +29,7 @@ class Document(Base):
     tenant_id = Column(UUID(as_uuid=True), default=uuid.uuid4)
     
     # Relationships
-    metadata = relationship("Metadata", back_populates="document", cascade="all, delete-orphan")
+    meta_records = relationship("Metadata", back_populates="document", cascade="all, delete-orphan")
     routing_decisions = relationship("RoutingDecision", back_populates="document", cascade="all, delete-orphan")
     processing_queue = relationship("ProcessingQueue", back_populates="document", cascade="all, delete-orphan")
 
@@ -49,7 +49,7 @@ class Metadata(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
-    document = relationship("Document", back_populates="metadata")
+    document = relationship("Document", back_populates="meta_records")
 
 class RoutingRule(Base):
     """Routing rules for business logic"""

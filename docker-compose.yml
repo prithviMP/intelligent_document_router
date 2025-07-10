@@ -26,6 +26,8 @@ services:
       - minio
     volumes:
       - ./libs:/app/libs
+    ports:
+      - "8001:8001"
     networks:
       - doc_network
 
@@ -38,6 +40,8 @@ services:
       - db
     volumes:
       - ./libs:/app/libs
+    ports:
+      - "8002:8002"
     networks:
       - doc_network
 
@@ -51,6 +55,8 @@ services:
       - minio
     volumes:
       - ./libs:/app/libs
+    ports:
+      - "8003:8003"
     networks:
       - doc_network
 
@@ -63,6 +69,8 @@ services:
       - db
     volumes:
       - ./libs:/app/libs
+    ports:
+      - "8004:8004"
     networks:
       - doc_network
 
