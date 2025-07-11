@@ -1,4 +1,3 @@
-
 import spacy
 from datetime import datetime
 from classification.departments import DEPARTMENTS, HIGH_PRIORITY_KEYWORDS, get_department_id_by_name
