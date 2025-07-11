@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # API Gateway - Main entry point
+  api_gateway:
+    build: ./microservices/api_gateway
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - db
+      - minio
+    volumes:
+      - ./libs:/app/libs
+    networks:
+      - doc_network
+
+  # Classification Service
+  classification:
+    build: ./microservices/classification
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - db
+      - minio
+    volumes:
+      - ./libs:/app/libs
+    ports:
+      - "8001:8001"
+    networks:
+      - doc_network
+
+  # Routing Engine
+  routing_engine:
+    build: ./microservices/routing_engine
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - db
+    volumes:
+      - ./libs:/app/libs
+    ports:
+      - "8002:8002"
+    networks:
+      - doc_network
+
+  # Content Analysis Service
+  content_analysis:
+    build: ./microservices/content_analysis
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - db
+      - minio
+    volumes:
+      - ./libs:/app/libs
+    ports:
+      - "8003:8003"
+    networks:
+      - doc_network
+
+  # Workflow Integration Service
+  workflow_integration:
+    build: ./microservices/workflow_integration
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - db
+    volumes:
+      - ./libs:/app/libs
+    ports:
+      - "8004:8004"
+    networks:
+      - doc_network
+
+  # PostgreSQL Database
+  db:
+    build: ./infrastructure/db
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infrastructure/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - doc_network
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: secret
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - doc_network
+
+  # MinIO Storage (S3-compatible)
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    volumes:
+      - storage:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    networks:
+      - doc_network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - doc_network
+
+volumes:
+  pgdata:
+  rabbitmq_data:
+  storage:
+  redis_data:
+
+networks:
+  doc_network:
+    driver: bridge 
