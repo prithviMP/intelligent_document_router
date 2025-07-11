@@ -37,7 +37,6 @@ DEPARTMENTS = {
         "keywords": ["document", "file", "general", "misc", "other"]
     }
 }
-
 # Legacy compatibility
 DEPARTMENT_KEYWORDS = {dept["name"]: dept["keywords"] for dept in DEPARTMENTS.values()}
 
